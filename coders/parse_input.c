@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   check_input.c                                      :+:      :+:    :+:   */
+/*   parse_input.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 17:00:58 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/07 17:29:18 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/07 18:33:09 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ A function that validates the CLI.
 Returns 1 if all arguments are valid.
 0 if not.
 */
-int	check_input(int argc, char *argv[])
+static int	check_input(int argc, char *argv[])
 {
 	int	i;
 
@@ -54,4 +54,38 @@ int	check_input(int argc, char *argv[])
 	if (is_scheduler(argv[i]) == 0)
 		return (0);
 	return (1);
+}
+
+/*
+A function that validates the CLI
+and saves in the struct t_args.
+Returns NULL if args are invalid.
+Scheduler: 0 for fifo, 1 for edf.
+*/
+t_args	*parse_input(int argc, char *argv[])
+{
+	t_args	*args;
+
+	if (check_input(argc, argv) == 0)
+		return (NULL);
+	args = malloc(sizeof(t_args));
+	if (!args)
+		return (NULL);
+	args->num_coders = atoi(argv[1]);
+	if (args->num_coders < 1)
+	{
+		cleanup(args);
+		return (NULL);
+	}
+	args->time_burnout = atoi(argv[2]);
+	args->time_compile = atoi(argv[3]);
+	args->time_debug = atoi(argv[4]);
+	args->time_refactor = atoi(argv[5]);
+	args->num_compiles = atoi(argv[6]);
+	args->dongle_cooldown = atoi(argv[7]);
+	if (strcmp(argv[8], "fifo") == 0)
+		args->scheduler = 0;
+	else if (strcmp(argv[8], "edf") == 0)
+		args->scheduler = 1;
+	return (args);
 }

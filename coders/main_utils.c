@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 17:20:09 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/07 17:22:26 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/07 18:31:26 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,4 +15,10 @@
 void	print_error(char *msg)
 {
 	fprintf(stderr, "%s\n", msg);
+}
+
+void	cleanup(t_args *args)
+{
+	if (args)
+		free(args);
 }

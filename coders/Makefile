@@ -6,14 +6,14 @@
 #    By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/11/24 11:49:58 by yanlu             #+#    #+#              #
-#    Updated: 2026/04/07 17:33:52 by yanlu            ###   ########.fr        #
+#    Updated: 2026/04/07 18:31:42 by yanlu            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = codexion
 
 # Source files, obj files and header files
-SRC = main.c main_utils.c check_input.c
+SRC = main.c main_utils.c parse_input.c
 
 OBJ = $(SRC:.c=.o)
 
