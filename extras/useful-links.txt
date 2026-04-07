@@ -1,0 +1,13 @@
+Guides:
+https://42-cursus.gitbook.io/guide/3-rank-03/philosophers
+https://42-cursus.gitbook.io/guide/3-rank-03/philosophers/building-the-thing
+https://42-cursus.gitbook.io/guide/3-rank-03/philosophers/functions-used#usleep
+
+Testers:
+https://github.com/AbdallahZerfaoui/concurrency-stress-tester
+
+Projects:
+https://github.com/KeroBeros68/Codexion/tree/main
+https://github.com/Destrigo/42_New_Curriculum/tree/main/milestone_3/codexion
+https://github.com/Prashant-Bharaj/codexion
+https://github.com/sousampere/42_codexion

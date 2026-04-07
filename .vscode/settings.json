@@ -1,0 +1,9 @@
+{
+  "42header.username": "yanlu",
+  "42header.email": "yanlu@student.42berlin.de",
+  "editor.tabSize": 4,
+  "editor.insertSpaces": false,
+  "editor.renderWhitespace": "all",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true
+}
