@@ -36,7 +36,7 @@ Run with:
 
     ./codexion number_of_coders time_to_burnout time_to_compile time_to_debug \
            time_to_refactor number_of_compiles_required dongle_cooldown scheduler
-    
+
     // Examples:
     ./codexion 4 800 200 100 200 5 400 fifo
     ./codexion 4 800 200 100 200 5 400 edf
@@ -81,3 +81,4 @@ Example output:
 
 ## Resources
 - [POSIX Threads Programming by Blaise Barney](https://hpc-tutorials.llnl.gov/posix/#note-this-tutorial-is-no-longer-supported-it-remains-for-archival-purposes)
+- [Codexion visualizer](https://codexionvisualizer.dev/)
