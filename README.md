@@ -81,4 +81,6 @@ Example output:
 
 ## Resources
 - [POSIX Threads Programming by Blaise Barney](https://hpc-tutorials.llnl.gov/posix/#note-this-tutorial-is-no-longer-supported-it-remains-for-archival-purposes)
+- [CodeVault tutorial: Unix Threads in C](https://www.youtube.com/playlist?list=PLfqABt5AS4FmuQf70psXrsMLEDQXNkLq2)
+- [HackerRank tutorial: Heaps](https://www.youtube.com/watch?v=t0Cq6tVNRBA)
 - [Codexion visualizer](https://codexionvisualizer.dev/)
