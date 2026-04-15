@@ -19,8 +19,36 @@ custom event implementation) and how they coordinate access to shared resources
 prevented and how thread-safe communication is achieved between coders and the
 monitor
 
+### Data race prevention and thread-safe communication
+A **race condition** is a condition of a program where its behavior depends on the relative timing or interleaving of multiple threads or processes. When multiple threads access a shared resources without sufficient protections, the behavior can be unpredictable or undefined.
+
+**Mutexes** (type `pthread_mutex_t`) are used to prevent data races. A mutex is essentially a lock that allows us to regulate access to data and prevent shared resources being used at the same time.
+
+In this project, dongles are implemented as mutexes.
+
+logging protected by mutex, too.
+
 ### Blocking cases handled
-all the concurrency issues addressed in your solution (e.g., deadlock prevention and Coffman’s conditions, starvation prevention, cooldown handling, precise burnout detection, and log serialization).
+This solution addresses the following concurrency issues:
+
+#### Deadlock prevention and Coffman’s conditions
+The use of mutexes can result in **deadlocks**. [Deadlock](https://en.wikipedia.org/wiki/Deadlock_(computer_science)) is a situation in which no thread can proceed because each waits for another to take action.
+A deadlock situation can arise if all of the 4 Coffman's conditions occur simultaneously in a system:
+- Mutual exclusion: multiple resources are not shareable; only one process at a time may use each resource.
+- Hold and wait or resource holding: a process is currently holding at least one resource and requesting additional resources which are being held by other processes.
+- No preemption: a resource can be released only voluntarily by the process holding it.
+- Circular wait: each process must be waiting for a resource which is being held by another process, which in turn is waiting for the first process to release the resource.
+In this project, a deadlock can occur when each coder holds to dongle to their left.
+
+
+
+#### Starvation prevention
+
+#### Cooldown handling
+
+#### Precise burnout detection
+
+#### Log serialization
 
 
 ## Instructions
@@ -83,4 +111,7 @@ Example output:
 - [POSIX Threads Programming by Blaise Barney](https://hpc-tutorials.llnl.gov/posix/#note-this-tutorial-is-no-longer-supported-it-remains-for-archival-purposes)
 - [CodeVault tutorial: Unix Threads in C](https://www.youtube.com/playlist?list=PLfqABt5AS4FmuQf70psXrsMLEDQXNkLq2)
 - [HackerRank tutorial: Heaps](https://www.youtube.com/watch?v=t0Cq6tVNRBA)
+- [Threads, mutexes and Concurrent programming in C](https://www.codequoi.com/en/threads-mutexes-and-concurrent-programming-in-c/)
+- [Mutex lock for Linux thread synchronization](https://www.geeksforgeeks.org/linux-unix/mutex-lock-for-linux-thread-synchronization/)
 - [Codexion visualizer](https://codexionvisualizer.dev/)
+- [Helgrind: a thread error detector](https://valgrind.org/docs/manual/hg-manual.html)

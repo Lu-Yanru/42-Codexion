@@ -6,13 +6,14 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:54:56 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/07 18:23:17 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/15 15:12:37 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CODEXION_H
 # define CODEXION_H
 
+# include <pthread.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
@@ -28,6 +29,30 @@ typedef struct s_args
 	int	dongle_cooldown;
 	int	scheduler;
 }	t_args;
+
+typedef struct s_dongle
+{
+	pthread_mutex_t	mutex;
+	t_args			args;
+}	t_dongle;
+
+typedef struct s_coder
+{
+	pthread_t	thread;
+	int			id;
+	t_args		args;
+	t_dongle	*ldongle;
+	t_dongle	*rdongle;
+	int			flag_burnout;
+}	t_coder;
+
+typedef struct s_program
+{
+	t_coder		*coders;
+	t_dongle	*dongles;
+	t_args		args;
+	int			flag_stop;
+}	t_program;
 
 /* Input validation */
 t_args	*parse_input(int argc, char *argv[]);
