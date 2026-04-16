@@ -6,7 +6,7 @@
 #    By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/11/24 11:49:58 by yanlu             #+#    #+#              #
-#    Updated: 2026/04/16 13:43:20 by yanlu            ###   ########.fr        #
+#    Updated: 2026/04/16 15:57:25 by yanlu            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,7 @@ INCDIR = coders
 
 # Source files, obj files and header files
 SRC = $(addprefix $(SRCDIR)/, \
-	main.c main_utils.c parse_input.c \
+	main.c main_utils.c parse_input.c init.c\
 	coder_routine.c \
 )
 
@@ -27,7 +27,7 @@ HEADER = $(addprefix $(INCDIR)/, codexion.h)
 
 # Compiler and flags
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -pthread
+CFLAGS = -Wall -Wextra -Werror -pthread -g
 
 # Rules
 all: $(NAME)

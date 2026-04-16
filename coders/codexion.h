@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:54:56 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/16 14:23:12 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/16 16:08:39 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,14 @@ typedef struct s_args
 typedef struct s_dongle
 {
 	pthread_mutex_t	mutex;
-	t_args			args;
+	t_args			*args;
 }	t_dongle;
 
 typedef struct s_coder
 {
 	pthread_t		thread;
 	int				id;
-	t_args			args;
+	t_args			*args;
 	t_dongle		*ldongle;
 	t_dongle		*rdongle;
 	int				flag_burnout;
@@ -52,7 +52,7 @@ typedef struct s_program
 {
 	t_coder			*coders;
 	t_dongle		*dongles;
-	t_args			args;
+	t_args			*args;
 	int				flag_stop;
 	pthread_mutex_t	write_lock;
 }	t_program;
@@ -60,12 +60,15 @@ typedef struct s_program
 /* Input validation */
 t_args	*parse_input(int argc, char *argv[]);
 
+/* Initalization */
+t_program	*init_program(t_args *args);
+
 /* Coder routine */
 void	*coder_routine(void *arg);
 void	print_status(t_coder *coder, char *event);
 
 /* Utilities */
 void	print_error(char *msg);
-void	cleanup(t_args *args);
+void	cleanup(t_args *args, t_program *program);
 
 # endif

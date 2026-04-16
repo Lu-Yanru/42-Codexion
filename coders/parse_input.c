@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 17:00:58 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/07 18:33:09 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/16 15:32:04 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ t_args	*parse_input(int argc, char *argv[])
 	args->num_coders = atoi(argv[1]);
 	if (args->num_coders < 1)
 	{
-		cleanup(args);
+		cleanup(args, NULL);
 		return (NULL);
 	}
 	args->time_burnout = atoi(argv[2]);
