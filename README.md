@@ -26,7 +26,9 @@ A **race condition** is a condition of a program where its behavior depends on t
 
 In this project, dongles are implemented as mutexes.
 
-logging protected by mutex, too.
+Logging protected by mutex too to prevent interleaving of the logging messages.
+This in done by using a global `write_lock` that each coder points to.
+Whenever a coder thread prints a log message, it locks the `write_lock` and only release it after the printing.
 
 ### Blocking cases handled
 This solution addresses the following concurrency issues:
