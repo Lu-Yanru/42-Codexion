@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 17:20:09 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/17 11:35:49 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/17 18:28:18 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,10 @@ unsigned long	get_current_time(void)
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-void	print_error(char *msg)
+int	error_exit(char *msg)
 {
 	fprintf(stderr, "%s\n", msg);
+	return (1);
 }
 
 void	free_dongles(t_dongle *dongles, int size)

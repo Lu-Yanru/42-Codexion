@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:54:56 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/17 11:40:38 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/17 18:49:39 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ typedef struct s_dongle
 {
 	pthread_mutex_t	mutex;
 	t_args			*args;
+	unsigned long	last_used;
+	unsigned long	current_ddl;
 }	t_dongle;
 
 typedef struct s_coder
@@ -79,13 +81,15 @@ t_program	*init_program(t_args *args);
 /* Coder routine */
 void	*coder_routine(void *arg);
 void	print_status(t_coder *coder, char *event);
+int		compile(t_coder *coder);
+int		check_stop(t_coder *coder);
 
 /* Monitor routine */
 void	*monitor_routine(void *arg);
 
 /* Utilities */
 unsigned long	get_current_time(void);
-void			print_error(char *msg);
+int				error_exit(char *msg);
 void			cleanup(t_args *args, t_program *program);
 
 # endif

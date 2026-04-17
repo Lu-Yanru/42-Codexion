@@ -43,11 +43,16 @@ A deadlock situation can arise if all of the 4 Coffman's conditions occur simult
 In this project, a deadlock can occur when each coder holds to dongle to their left.
 
 This project breaks the circular wait condition by implementing an asymmetric resource hierarchy.
-Even-numbered coders always request their left dongle first, while odd-numbered coders always request their right dongle first.
+Even-numbered coders always request their left dongle first, while odd-numbered coders always request their right dongle first. This ensures that the dongles are always locked in the order of odd-indexed dongle -> even-indexed dongle.
 
 #### Starvation prevention
+The following scheduling policies are implemented for distributing the dongles:
+
+- **FIFO (First In, First Out)**: The dongle is granted to the coder whose request arrived first.
+- [**EDF (Earliest Deadline First)**](https://en.wikipedia.org/wiki/Earliest_deadline_first_scheduling): The dongle is granted to the coder whose deadline is the closest. Deadline = `last_compile_start`+ `time_to_burnout`.
 
 #### Cooldown handling
+check current_time - last_used >= time_to_cooldown before a coder picks up a dongle.
 
 #### Precise burnout detection
 
@@ -86,10 +91,6 @@ All time values are in miliseconds and must be positive integers.
 |`number_of_compiles_required`| Target compilations per coder for normal program termination |
 |`dongle_cooldown`| Time in ms where a dongle in unavailable after being released |
 |`scheduler`| The arbitration policy used by dongles, `fifo` or `edf`|
-
-### Scheduling policies
-- **FIFO (First In, First Out)**: The dongle is granted to the coder whose request arrived first.
-- [**EDF (Earliest Deadline First)**](https://en.wikipedia.org/wiki/Earliest_deadline_first_scheduling): The dongle is granted to the coder whose deadline is the closest. Deadline = `last_compile_start`+ `time_to_burnout`.
 
 ### Output format
 Any state change of a coder should be logged by printing a message to the terminal in the following format:

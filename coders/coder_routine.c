@@ -6,11 +6,26 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 16:01:23 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/17 11:51:47 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/17 17:58:37 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
+
+/*
+Check the stop flag with lock.
+*/
+int	check_stop(t_coder *coder)
+{
+	pthread_mutex_lock(coder->stop_lock);
+	if (*coder->flag_stop != 0)
+	{
+		pthread_mutex_unlock(coder->stop_lock);
+		return (1);
+	}
+	pthread_mutex_unlock(coder->stop_lock);
+	return (0);
+}
 
 /*
 Prints the status of a coder.
@@ -27,30 +42,25 @@ void	print_status(t_coder *coder, char *status)
 	pthread_mutex_unlock(coder->write_lock);
 }
 
-static void	debug(t_coder *coder)
+static int	debug(t_coder *coder)
 {
-	print_status(coder, "is debugging");
-	usleep(coder->args->time_debug * 1000);
-}
-
-static void	refactor(t_coder *coder)
-{
-	print_status(coder, "is refactoring");
-	usleep(coder->args->time_refactor * 1000);
-}
-
-/*
-Check the stop flag with lock.
-*/
-int	check_stop(t_coder *coder)
-{
-	pthread_mutex_lock(coder->stop_lock);
-	if (coder->flag_stop)
+	if (!check_stop(coder))
 	{
-		pthread_mutex_unlock(coder->stop_lock);
+		print_status(coder, "is debugging");
+		usleep(coder->args->time_debug * 1000);
 		return (1);
 	}
-	pthread_mutex_unlock(coder->stop_lock);
+	return (0);
+}
+
+static int	refactor(t_coder *coder)
+{
+	if (!check_stop(coder))
+	{
+		print_status(coder, "is refactoring");
+		usleep(coder->args->time_refactor * 1000);
+		return (1);
+	}
 	return (0);
 }
 
@@ -65,12 +75,16 @@ void	*coder_routine(void *arg)
 	coder = (t_coder *)arg;
 	while(!check_stop(coder))
 	{
+		if (!compile(coder))
+			break ;
 		// if (coder->args->scheduler == 0)
 		// 	compile_fifo(coder);
 		// else if (coder->args->scheduler == 1)
 		// 	compile_edf(coder);
-		debug(coder);
-		refactor(coder);
+		if (!debug(coder))
+			break ;
+		if (!refactor(coder))
+			break ;
 	}
 	return (NULL);
 }

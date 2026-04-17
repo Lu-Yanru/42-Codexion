@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 15:08:05 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/17 11:51:20 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/17 18:46:41 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ static t_dongle	*init_dongles(t_args *args)
 	{
 		pthread_mutex_init(&(dongles[i].mutex), NULL);
 		dongles[i].args = args;
+		dongles[i].last_used = 0;
+		dongles[i].current_ddl = 0;
 		i++;
 	}
 	return dongles;

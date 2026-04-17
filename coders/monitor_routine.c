@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 17:30:52 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/17 11:36:42 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/17 19:24:57 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,16 +29,16 @@ static int	check_burnout(t_program *program)
 		current_time = get_current_time();
 		pthread_mutex_lock((program->coders)[i].burnout_lock);
 		if (current_time - (program->coders)[i].last_compile
-			> (unsigned long) program->args->time_burnout
-			&& (program->coders)[i].flag_is_compiling == 0)
+				> (unsigned long) program->args->time_burnout
+				&& (program->coders)[i].flag_is_compiling == 0)
 		{
 			print_status(&(program->coders)[i], "burned out");
 			pthread_mutex_unlock((program->coders)[i].burnout_lock);
 			return (1);
 		}
+		pthread_mutex_unlock((program->coders)[i].burnout_lock);
 		i++;
 	}
-	pthread_mutex_unlock((program->coders)[i].burnout_lock);
 	return (0);
 }
 
@@ -56,7 +56,7 @@ static int	check_compiles(t_program *program)
 	while (i < program->args->num_coders)
 	{
 		pthread_mutex_lock((program->coders)[i].compiles_lock);
-		if ((program->coders)[i].already_compiled > program->args->num_coders)
+		if ((program->coders)[i].already_compiled >= program->args->num_coders)
 			count++;
 		pthread_mutex_unlock((program->coders)[i].compiles_lock);
 		i++;
@@ -91,9 +91,10 @@ void	*monitor_routine(void *arg)
 	while (1)
 	{
 		if (check_burnout(program))
-			break;
+			break ;
 		if (check_compiles(program))
-			break;
+			break ;
+		usleep(1000);
 	}
 	stop_all_threads(program);
 	return (NULL);

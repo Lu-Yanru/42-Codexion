@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:50:28 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/17 11:26:48 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/17 18:29:58 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,12 @@ static int	start_program(t_program *program)
 	while (i < program->args->num_coders)
 	{
 		if (pthread_create(&(program->coders[i].thread), NULL,
-				coder_routine, &(program->coders[i])))
+				&coder_routine, &(program->coders[i])) != 0)
 			return (0);
 		i++;
 	}
 	if (pthread_create(&program->monitor, NULL,
-			monitor_routine, program) != 0)
+			&monitor_routine, program) != 0)
 		return (0);
 	return (1);
 }
@@ -64,22 +64,19 @@ int	main(int argc, char *argv[])
 	program = NULL;
 	args = parse_input(argc, argv);
 	if (!args)
-	{
-		print_error("Invalid input.");
-		return (1);
-	}
+		return (error_exit("Invalid input."));
+	if (args->num_compiles == 0)
+		return (0);
 	program = init_program(args);
 	if (!program)
 	{
 		cleanup(args, program);
-		print_error("Fail to initialze program.");
-		return (1);
+		return (error_exit("Fail to initialze program."));
 	}
 	if (!start_program(program))
 	{
 		cleanup(args, program);
-		print_error("Fail to start program.");
-		return (1);
+		return (error_exit("Fail to start program."));
 	}
 	stop_program(program, args);
 }
