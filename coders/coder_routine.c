@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 16:01:23 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/17 09:01:32 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/17 11:51:47 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,11 @@ from different threads.
 */
 void	print_status(t_coder *coder, char *status)
 {
+	unsigned long	passed_time;
+
+	passed_time = get_current_time() - coder->start_time;
 	pthread_mutex_lock(coder->write_lock);
-	printf("%d %s\n", coder->id, status);
+	printf("%lu %d %s\n", passed_time, coder->id, status);
 	pthread_mutex_unlock(coder->write_lock);
 }
 

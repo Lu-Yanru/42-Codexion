@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 17:30:52 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/17 09:49:04 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/17 11:36:42 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,30 @@ Check if any coder is burnt out,
 if so, print out burnt out message
 and return 1, else return 0.
 */
-// static int	check_burnout(t_coder *coders)
+static int	check_burnout(t_program *program)
+{
+	int	i;
+
+	i = 0;
+	while (i < program->args->num_coders)
+	{
+		unsigned long	current_time;
+
+		current_time = get_current_time();
+		pthread_mutex_lock((program->coders)[i].burnout_lock);
+		if (current_time - (program->coders)[i].last_compile
+			> (unsigned long) program->args->time_burnout
+			&& (program->coders)[i].flag_is_compiling == 0)
+		{
+			print_status(&(program->coders)[i], "burned out");
+			pthread_mutex_unlock((program->coders)[i].burnout_lock);
+			return (1);
+		}
+		i++;
+	}
+	pthread_mutex_unlock((program->coders)[i].burnout_lock);
+	return (0);
+}
 
 /*
 Check if all coders have compiled enough,
@@ -67,8 +90,8 @@ void	*monitor_routine(void *arg)
 	program = (t_program *)arg;
 	while (1)
 	{
-		// if (check_burnout(program))
-		// 	break;
+		if (check_burnout(program))
+			break;
 		if (check_compiles(program))
 			break;
 	}

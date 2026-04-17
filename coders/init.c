@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 15:08:05 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/17 09:44:47 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/17 11:51:20 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,14 @@ static t_coder	*init_coders(t_args	*args, t_program *program)
 		else
 			coders[i].rdongle = &(program->dongles[i + 1]);
 		coders[i].flag_stop = &(program->flag_stop);
+		coders[i].flag_is_compiling = 0;
 		coders[i].already_compiled = 0;
+		coders[i].start_time = program->start_time;
+		coders[i].last_compile = program->start_time;
 		coders[i].write_lock = &(program->write_lock);
 		coders[i].stop_lock = &(program->stop_lock);
 		coders[i].compiles_lock = &(program->compiles_lock);
+		coders[i].burnout_lock = &(program->burnout_lock);
 		i++;
 	}
 	return coders;
@@ -75,16 +79,18 @@ t_program	*init_program(t_args *args)
 	program = malloc(sizeof(t_program));
 	if (!program)
 		return (NULL);
+	program->start_time = get_current_time();
+		program->args = args;
+	program->flag_stop = 0;
+	pthread_mutex_init(&(program->write_lock), NULL);
+	pthread_mutex_init(&(program->stop_lock), NULL);
+	pthread_mutex_init(&(program->compiles_lock), NULL);
+	pthread_mutex_init(&(program->burnout_lock), NULL);
 	program->dongles = init_dongles(args);
 	if (!program->dongles)
 		return (NULL);
 	program->coders = init_coders(args, program);
 	if (!program->coders)
 		return (NULL);
-	program->args = args;
-	program->flag_stop = 0;
-	pthread_mutex_init(&(program->write_lock), NULL);
-	pthread_mutex_init(&(program->stop_lock), NULL);
-	pthread_mutex_init(&(program->compiles_lock), NULL);
 	return (program);
 }

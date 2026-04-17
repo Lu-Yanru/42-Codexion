@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 17:00:58 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/16 15:32:04 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/17 11:14:15 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,18 @@ static int	check_input(int argc, char *argv[])
 }
 
 /*
+0 for fifo, 1 for edf.
+*/
+static int	assign_scheduler(char *text)
+{
+	if (strcmp(text, "fifo") == 0)
+		return (0);
+	else if (strcmp(text, "edf") == 0)
+		return (1);
+	return (-1);
+}
+
+/*
 A function that validates the CLI
 and saves in the struct t_args.
 Returns NULL if args are invalid.
@@ -83,9 +95,6 @@ t_args	*parse_input(int argc, char *argv[])
 	args->time_refactor = atoi(argv[5]);
 	args->num_compiles = atoi(argv[6]);
 	args->dongle_cooldown = atoi(argv[7]);
-	if (strcmp(argv[8], "fifo") == 0)
-		args->scheduler = 0;
-	else if (strcmp(argv[8], "edf") == 0)
-		args->scheduler = 1;
+	args->scheduler = assign_scheduler(argv[8]);
 	return (args);
 }

@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:50:28 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/17 09:46:55 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/17 11:26:48 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,6 @@ static int	start_program(t_program *program)
 {
 	int			i;
 
-	if (pthread_create(&program->monitor, NULL,
-			monitor_routine, program) != 0)
-		return (0);
 	i = 0;
 	while (i < program->args->num_coders)
 	{
@@ -32,6 +29,9 @@ static int	start_program(t_program *program)
 			return (0);
 		i++;
 	}
+	if (pthread_create(&program->monitor, NULL,
+			monitor_routine, program) != 0)
+		return (0);
 	return (1);
 }
 
@@ -50,9 +50,9 @@ static void	stop_program(t_program *program, t_args *args)
 		i++;
 	}
 	pthread_join(program->monitor, NULL);
-	pthread_mutex_unlock(&program->write_lock);
-	pthread_mutex_unlock(&program->stop_lock);
-	pthread_mutex_unlock(&program->compiles_lock);
+	// pthread_mutex_unlock(&program->write_lock);
+	// pthread_mutex_unlock(&program->stop_lock);
+	// pthread_mutex_unlock(&program->compiles_lock);
 	cleanup(args, program);
 }
 

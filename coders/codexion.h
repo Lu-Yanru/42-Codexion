@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:54:56 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/17 09:41:48 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/17 11:40:38 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
+# include <sys/time.h>
 # include <unistd.h>
 
 typedef struct s_args
@@ -45,10 +46,14 @@ typedef struct s_coder
 	t_dongle		*ldongle;
 	t_dongle		*rdongle;
 	int				*flag_stop;
+	int				flag_is_compiling;
 	int				already_compiled;
+	unsigned long	start_time;
+	unsigned long	last_compile;
 	pthread_mutex_t	*write_lock;
 	pthread_mutex_t	*stop_lock;
 	pthread_mutex_t	*compiles_lock;
+	pthread_mutex_t	*burnout_lock;
 }	t_coder;
 
 typedef struct s_program
@@ -57,10 +62,12 @@ typedef struct s_program
 	t_coder			*coders;
 	t_dongle		*dongles;
 	t_args			*args;
+	unsigned long	start_time;
 	int				flag_stop;
 	pthread_mutex_t	write_lock;
 	pthread_mutex_t	stop_lock;
 	pthread_mutex_t	compiles_lock;
+	pthread_mutex_t	burnout_lock;
 }	t_program;
 
 /* Input validation */
@@ -77,7 +84,8 @@ void	print_status(t_coder *coder, char *event);
 void	*monitor_routine(void *arg);
 
 /* Utilities */
-void	print_error(char *msg);
-void	cleanup(t_args *args, t_program *program);
+unsigned long	get_current_time(void);
+void			print_error(char *msg);
+void			cleanup(t_args *args, t_program *program);
 
 # endif
