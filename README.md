@@ -24,7 +24,7 @@ A **race condition** is a condition of a program where its behavior depends on t
 
 **Mutexes** (type `pthread_mutex_t`) are used to prevent data races. A mutex is essentially a lock that allows us to regulate access to data and prevent shared resources being used at the same time.
 
-In this project, dongles are implemented as mutexes.
+In this project, dongles are implemented as mutexes. Picking up a dongle is implemented as locking its mutex for `time_to_compile` ms. This ensures that a dongle cannot be accessed by two coders at the same time.
 
 Logging protected by mutex too to prevent interleaving of the logging messages.
 This in done by using a global `write_lock` that each coder points to.
@@ -42,7 +42,8 @@ A deadlock situation can arise if all of the 4 Coffman's conditions occur simult
 - Circular wait: each process must be waiting for a resource which is being held by another process, which in turn is waiting for the first process to release the resource.
 In this project, a deadlock can occur when each coder holds to dongle to their left.
 
-
+This project breaks the circular wait condition by implementing an asymmetric resource hierarchy.
+Even-numbered coders always request their left dongle first, while odd-numbered coders always request their right dongle first.
 
 #### Starvation prevention
 
@@ -51,15 +52,16 @@ In this project, a deadlock can occur when each coder holds to dongle to their l
 #### Precise burnout detection
 
 #### Log serialization
+Logging protected by mutex
 
 
 ## Instructions
 Compile with:
 
-    cd coders
     make
 
     // or
+    cd coders
     cc -Wall -Wextra -Werror -pthread *.c -o codexion
 
 Run with:
@@ -114,6 +116,5 @@ Example output:
 - [CodeVault tutorial: Unix Threads in C](https://www.youtube.com/playlist?list=PLfqABt5AS4FmuQf70psXrsMLEDQXNkLq2)
 - [HackerRank tutorial: Heaps](https://www.youtube.com/watch?v=t0Cq6tVNRBA)
 - [Threads, mutexes and Concurrent programming in C](https://www.codequoi.com/en/threads-mutexes-and-concurrent-programming-in-c/)
-- [Mutex lock for Linux thread synchronization](https://www.geeksforgeeks.org/linux-unix/mutex-lock-for-linux-thread-synchronization/)
 - [Codexion visualizer](https://codexionvisualizer.dev/)
 - [Helgrind: a thread error detector](https://valgrind.org/docs/manual/hg-manual.html)

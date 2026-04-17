@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 16:01:23 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/16 15:54:39 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/17 09:01:32 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,31 @@ static void	refactor(t_coder *coder)
 	usleep(coder->args->time_refactor * 1000);
 }
 
+/*
+Check the stop flag with lock.
+*/
+int	check_stop(t_coder *coder)
+{
+	pthread_mutex_lock(coder->stop_lock);
+	if (coder->flag_stop)
+	{
+		pthread_mutex_unlock(coder->stop_lock);
+		return (1);
+	}
+	pthread_mutex_unlock(coder->stop_lock);
+	return (0);
+}
+
+/*
+Coders compile -> debug -> refactor
+while checking if monitor tells them to stop.
+*/
 void	*coder_routine(void *arg)
 {
 	t_coder	*coder;
 
 	coder = (t_coder *)arg;
-	while(coder->flag_burnout == 0)
+	while(!check_stop(coder))
 	{
 		// if (coder->args->scheduler == 0)
 		// 	compile_fifo(coder);

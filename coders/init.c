@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 15:08:05 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/16 16:36:05 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/17 09:44:47 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,11 @@ static t_coder	*init_coders(t_args	*args, t_program *program)
 			coders[i].rdongle = &(program->dongles[0]);
 		else
 			coders[i].rdongle = &(program->dongles[i + 1]);
+		coders[i].flag_stop = &(program->flag_stop);
+		coders[i].already_compiled = 0;
 		coders[i].write_lock = &(program->write_lock);
+		coders[i].stop_lock = &(program->stop_lock);
+		coders[i].compiles_lock = &(program->compiles_lock);
 		i++;
 	}
 	return coders;
@@ -78,6 +82,9 @@ t_program	*init_program(t_args *args)
 	if (!program->coders)
 		return (NULL);
 	program->args = args;
+	program->flag_stop = 0;
 	pthread_mutex_init(&(program->write_lock), NULL);
+	pthread_mutex_init(&(program->stop_lock), NULL);
+	pthread_mutex_init(&(program->compiles_lock), NULL);
 	return (program);
 }

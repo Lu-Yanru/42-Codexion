@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 17:20:09 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/16 16:39:51 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/17 09:45:35 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ void	cleanup(t_args *args, t_program	*program)
 	if (program)
 	{
 		pthread_mutex_destroy(&(program->write_lock));
+		pthread_mutex_destroy(&(program->stop_lock));
+		pthread_mutex_destroy(&(program->compiles_lock));
 		free_dongles(program->dongles, size);
 		free(program->coders);
 		free(program);

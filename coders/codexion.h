@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:54:56 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/16 16:08:39 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/17 09:41:48 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,17 +44,23 @@ typedef struct s_coder
 	t_args			*args;
 	t_dongle		*ldongle;
 	t_dongle		*rdongle;
-	int				flag_burnout;
+	int				*flag_stop;
+	int				already_compiled;
 	pthread_mutex_t	*write_lock;
+	pthread_mutex_t	*stop_lock;
+	pthread_mutex_t	*compiles_lock;
 }	t_coder;
 
 typedef struct s_program
 {
+	pthread_t		monitor;
 	t_coder			*coders;
 	t_dongle		*dongles;
 	t_args			*args;
 	int				flag_stop;
 	pthread_mutex_t	write_lock;
+	pthread_mutex_t	stop_lock;
+	pthread_mutex_t	compiles_lock;
 }	t_program;
 
 /* Input validation */
@@ -66,6 +72,9 @@ t_program	*init_program(t_args *args);
 /* Coder routine */
 void	*coder_routine(void *arg);
 void	print_status(t_coder *coder, char *event);
+
+/* Monitor routine */
+void	*monitor_routine(void *arg);
 
 /* Utilities */
 void	print_error(char *msg);
