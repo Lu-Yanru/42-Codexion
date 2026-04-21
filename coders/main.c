@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:50:28 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/17 18:29:58 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/21 18:36:53 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,21 +39,21 @@ static int	start_program(t_program *program)
 Stop program, unlock all mutexes,
 join all threads, free all memories.
 */
-static void	stop_program(t_program *program, t_args *args)
+static int	stop_program(t_program *program, t_args *args)
 {
 	int	i;
 
 	i = 0;
 	while (i < args->num_coders)
 	{
-		pthread_join(program->coders[i].thread, NULL);
+		if (pthread_join(program->coders[i].thread, NULL) != 0)
+			return (0);
 		i++;
 	}
-	pthread_join(program->monitor, NULL);
-	// pthread_mutex_unlock(&program->write_lock);
-	// pthread_mutex_unlock(&program->stop_lock);
-	// pthread_mutex_unlock(&program->compiles_lock);
+	if (pthread_join(program->monitor, NULL) != 0)
+		return (0);
 	cleanup(args, program);
+	return (1);
 }
 
 int	main(int argc, char *argv[])
@@ -64,19 +64,14 @@ int	main(int argc, char *argv[])
 	program = NULL;
 	args = parse_input(argc, argv);
 	if (!args)
-		return (error_exit("Invalid input."));
+		return (error_exit("Invalid input.", NULL, NULL));
 	if (args->num_compiles == 0)
 		return (0);
 	program = init_program(args);
 	if (!program)
-	{
-		cleanup(args, program);
-		return (error_exit("Fail to initialze program."));
-	}
+		return (error_exit("Fail to initialze program.", args, program));
 	if (!start_program(program))
-	{
-		cleanup(args, program);
-		return (error_exit("Fail to start program."));
-	}
-	stop_program(program, args);
+		return (error_exit("Fail to start program.", args, program));
+	if (!stop_program(program, args))
+		return (error_exit("Fail to stop program.", args, program));
 }

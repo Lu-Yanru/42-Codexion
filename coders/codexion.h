@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:54:56 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/21 17:59:10 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/21 18:37:13 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void	*monitor_routine(void *arg);
 
 /* Utilities */
 unsigned long	get_current_time(void);
-int				error_exit(char *msg);
+int				error_exit(char *msg, t_args *args, t_program *program);
 void			cleanup(t_args *args, t_program *program);
 
 # endif

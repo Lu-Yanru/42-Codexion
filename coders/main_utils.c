@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 17:20:09 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/17 18:28:18 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/21 18:38:49 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,10 @@ unsigned long	get_current_time(void)
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-int	error_exit(char *msg)
+int	error_exit(char *msg, t_args *args, t_program *program)
 {
 	fprintf(stderr, "%s\n", msg);
+	cleanup(args, program);
 	return (1);
 }
 
@@ -40,7 +41,7 @@ void	free_dongles(t_dongle *dongles, int size)
 	dongles = NULL;
 }
 
-void	cleanup(t_args *args, t_program	*program)
+void	cleanup(t_args *args, t_program *program)
 {
 	int	size;
 
@@ -58,6 +59,7 @@ void	cleanup(t_args *args, t_program	*program)
 		pthread_mutex_destroy(&(program->burnout_lock));
 		free_dongles(program->dongles, size);
 		free(program->coders);
+		program->coders = NULL;
 		free(program);
 		program = NULL;
 	}

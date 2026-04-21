@@ -6,14 +6,15 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/17 15:56:40 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/21 17:56:54 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/21 18:31:36 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
 /*
-Lock the dongle if the cooldown time has passed.
+Lock the dongle if the cooldown time has passed
+and if the stop flag is 0.
 */
 static int	lock_dongle(t_coder *coder, t_dongle *dongle)
 {
@@ -26,6 +27,11 @@ static int	lock_dongle(t_coder *coder, t_dongle *dongle)
 			return (0);
 		usleep(100);
 		pthread_mutex_lock(&dongle->mutex);
+	}
+	if (check_stop(coder))
+	{
+		pthread_mutex_unlock(&dongle->mutex);
+		return (0);
 	}
 	print_status(coder, "has taken a dongle");
 	return (1);
