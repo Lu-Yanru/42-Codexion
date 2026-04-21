@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 15:08:05 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/17 18:46:41 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/21 17:58:51 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ static t_coder	*init_coders(t_args	*args, t_program *program)
 		else
 			coders[i].rdongle = &(program->dongles[i + 1]);
 		coders[i].flag_stop = &(program->flag_stop);
-		coders[i].flag_is_compiling = 0;
 		coders[i].already_compiled = 0;
 		coders[i].start_time = program->start_time;
 		coders[i].last_compile = program->start_time;
