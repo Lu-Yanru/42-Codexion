@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 17:20:09 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/22 13:00:13 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/22 20:16:52 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,9 @@ void	cleanup(t_args *args, t_program *program)
 {
 	int	size;
 
-	size = args->num_coders;
 	if (args)
 	{
+		size = args->num_coders;
 		free(args);
 		args = NULL;
 	}
