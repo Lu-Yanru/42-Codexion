@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 15:08:05 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/21 17:58:51 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/22 14:52:37 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,26 @@ static t_dongle	*init_dongles(t_args *args)
 	while (i < args->num_coders)
 	{
 		pthread_mutex_init(&(dongles[i].mutex), NULL);
+		pthread_cond_init(&(dongles[i].cond), NULL);
 		dongles[i].args = args;
 		dongles[i].last_used = 0;
-		dongles[i].current_ddl = 0;
+		dongles[i].queue.size = 0;
+		dongles[i].ticket = 0;
 		i++;
 	}
 	return dongles;
+}
+
+static void	connect_coder_program(t_coder *coder, t_program *program)
+{
+	coder->flag_stop = &(program->flag_stop);
+	coder->already_compiled = 0;
+	coder->start_time = program->start_time;
+	coder->last_compile = program->start_time;
+	coder->write_lock = &(program->write_lock);
+	coder->stop_lock = &(program->stop_lock);
+	coder->compiles_lock = &(program->compiles_lock);
+	coder->burnout_lock = &(program->burnout_lock);
 }
 
 /*
@@ -56,14 +70,7 @@ static t_coder	*init_coders(t_args	*args, t_program *program)
 			coders[i].rdongle = &(program->dongles[0]);
 		else
 			coders[i].rdongle = &(program->dongles[i + 1]);
-		coders[i].flag_stop = &(program->flag_stop);
-		coders[i].already_compiled = 0;
-		coders[i].start_time = program->start_time;
-		coders[i].last_compile = program->start_time;
-		coders[i].write_lock = &(program->write_lock);
-		coders[i].stop_lock = &(program->stop_lock);
-		coders[i].compiles_lock = &(program->compiles_lock);
-		coders[i].burnout_lock = &(program->burnout_lock);
+		connect_coder_program(&coders[i], program);
 		i++;
 	}
 	return coders;

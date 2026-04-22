@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 16:01:23 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/17 17:58:37 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/22 14:37:25 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,10 +77,6 @@ void	*coder_routine(void *arg)
 	{
 		if (!compile(coder))
 			break ;
-		// if (coder->args->scheduler == 0)
-		// 	compile_fifo(coder);
-		// else if (coder->args->scheduler == 1)
-		// 	compile_edf(coder);
 		if (!debug(coder))
 			break ;
 		if (!refactor(coder))

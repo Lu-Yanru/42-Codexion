@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:54:56 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/21 18:37:13 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/22 14:57:58 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,26 @@ typedef struct s_args
 	int	scheduler;
 }	t_args;
 
+typedef struct s_queue_node
+{
+	int				coder_id;
+	unsigned long	priority;
+}	t_queue_node;
+
+typedef struct s_queue
+{
+	int				size;
+	t_queue_node 	queue[2];
+}	t_queue;
+
 typedef struct s_dongle
 {
 	pthread_mutex_t	mutex;
+	pthread_cond_t	cond;
 	t_args			*args;
 	unsigned long	last_used;
-	unsigned long	current_ddl;
+	t_queue			queue;
+	int				ticket;
 }	t_dongle;
 
 typedef struct s_coder
@@ -85,6 +99,11 @@ int		check_stop(t_coder *coder);
 
 /* Monitor routine */
 void	*monitor_routine(void *arg);
+
+/* Heap */
+void	enqueue(t_queue *queue, t_queue_node node);
+void	dequeue(t_queue *queue);
+void	dequeue_and_wake(t_dongle *dongle);
 
 /* Utilities */
 unsigned long	get_current_time(void);

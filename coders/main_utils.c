@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 17:20:09 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/21 18:38:49 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/22 13:00:13 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ void	free_dongles(t_dongle *dongles, int size)
 	while (i < size)
 	{
 		pthread_mutex_destroy(&(dongles[i].mutex));
+		pthread_cond_destroy(&(dongles[i].cond));
 		i++;
 	}
 	free(dongles);

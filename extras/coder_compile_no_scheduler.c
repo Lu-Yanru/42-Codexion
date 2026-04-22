@@ -5,57 +5,31 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/22 12:25:08 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/22 14:58:35 by yanlu            ###   ########.fr       */
+/*   Created: 2026/04/17 15:56:40 by yanlu             #+#    #+#             */
+/*   Updated: 2026/04/21 18:31:36 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
 /*
-Set the priority queue based on scheduler.
-*/
-static void	set_priority(t_coder *coder, t_dongle *dongle)
-{
-	t_queue_node	my_node;
-
-	pthread_mutex_lock(&dongle->mutex);
-	my_node.coder_id = coder->id;
-	if (coder->args->scheduler == 0)
-		my_node.priority = dongle->ticket++;
-	else
-		my_node.priority = coder->last_compile + coder->args->time_burnout;
-	enqueue(&dongle->queue, my_node);
-	while (dongle->queue.queue[0].coder_id != coder->id)
-		pthread_cond_wait(&dongle->cond, &dongle->mutex);
-}
-
-/*
 Lock the dongle if the cooldown time has passed
-and if the stop flag is 0,
-and if the coder ticket is at the front of the queue.
-Return 1 if successfully lock the dongle, 0 otherwise.
+and if the stop flag is 0.
 */
 static int	lock_dongle(t_coder *coder, t_dongle *dongle)
 {
-	set_priority(coder, dongle);
+	pthread_mutex_lock(&dongle->mutex);
 	while (get_current_time()
 			< dongle->last_used + coder->args->dongle_cooldown)
 	{
 		pthread_mutex_unlock(&dongle->mutex);
 		if (check_stop(coder))
-		{
-			pthread_mutex_lock(&dongle->mutex);
-			dequeue_and_wake(dongle);
-			pthread_mutex_unlock(&dongle->mutex);
 			return (0);
-		}
 		usleep(100);
 		pthread_mutex_lock(&dongle->mutex);
 	}
 	if (check_stop(coder))
 	{
-		dequeue_and_wake(dongle);
 		pthread_mutex_unlock(&dongle->mutex);
 		return (0);
 	}
@@ -70,7 +44,6 @@ and unlock the dongle.
 static void	unlock_dongle(t_dongle *dongle)
 {
 	dongle->last_used = get_current_time();
-	dequeue_and_wake(dongle);
 	pthread_mutex_unlock(&dongle->mutex);
 }
 
