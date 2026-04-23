@@ -6,7 +6,7 @@
 #    By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/11/24 11:49:58 by yanlu             #+#    #+#              #
-#    Updated: 2026/04/22 14:38:14 by yanlu            ###   ########.fr        #
+#    Updated: 2026/04/23 17:26:51 by yanlu            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,7 @@ INCDIR = coders
 
 # Source files, obj files and header files
 SRC = $(addprefix $(SRCDIR)/, \
-	main.c main_utils.c parse_input.c init.c heap.c\
+	main.c main_utils.c parse_input.c init.c heap.c queue.c\
 	coder_routine.c coder_compile.c monitor_routine.c \
 )
 

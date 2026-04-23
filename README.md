@@ -4,13 +4,13 @@
 ## Description
 Codexion is a concurrent programming project implementing a variation of the classic [dining philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem).
 
-N coders sit in a circle around a shared Quantum Compiler. Each coder alternates between three activities: compiling, debugging, and refactoring. Compiling requires holding two USB dongles simultaneously (left and right). There are as many dongles as coders, one between each adjacent pair.
+N coders sit in a circle around a shared Quantum Compiler. Each coder alternates between three activities: compiling, debugging, and refactoring. Compiling requires holding two USB dongles simultaneously (left and right). There are as many dongles as coders, one between each adjacent pair. A dongle has to wait `time_to_cooldown` ms after being released before it can be used again.
 
 The program stops in one of the following cases:
 - All coders compiled at least `number_of_compiles_required` times.
 - One of the coders burned out, i.e. they fail to start a new compilation within `time_to_burnout` milliseconds since their last compile or the start of the simulation. Coders should avoid burnout as far as possible.
 
-Each coder runs as an independent POSIX thread. A dedicated monitor thread polls the simulation state every milisecond and thus detects burnout within 10 ms.
+Each coder runs as an independent POSIX thread. A dedicated monitor thread polls the simulation state every milisecond, and thus stops the program within 10 ms when one of the stop conditions is met.
 
 ### Thread synchronization mechanisms
 A **race condition** is a condition of a program where its behavior depends on the relative timing or interleaving of multiple threads or processes. When multiple threads access a shared resources without sufficient protections, the behavior can be unpredictable or undefined.
@@ -25,7 +25,7 @@ Whenever a coder thread prints a log message, it locks the `write_lock` and only
 
 Two more mutexes, `compiles_lock` and `burnout_lock`, are implemented. Whenever a coder compiled, it addes one to its own `already_compiled` counter while locking with `compiles_lock`. The monitoring thread reads the `already_compiled` counter while locking with `compiles_lock` to check whether all coders have compiled enough times. The monitoring thread also checks whether any coder has burned out using the `burnout_lock`. Upon starting to compile, a coder updates their `last_compile` time while locking the `burnout_lock`. The monitoring thread reads the `last_compile` time of each coder while locking the `burnout_lock`, and compare it with `time_to_burnout` to check if a coder has burned out. Once the monitoring thread detects a stop condition, whether it's all coders compiled enough times or one coder has burned out, it sets `flag_stop` to one while locking the `stop_lock`. All coders reads `flag_stop` with the `stop_lock` continuously and stop their routine as soon as they detect that `flag_stop` has been set to one. Using mutexes prevents the coder threads and monitoring thread from accessing the same variable at the same time, and one thread might accessed the value before it was modified by the other.
 
-`pthread_cond_t` `pthread_cond_broadcast`
+A condition variable (`pthread_cond_t`) is implemented for each dongle to manage the priority queue. Each coder uses `pthread_cond_wait` while waiting on their turn to take the dongle. Releasing the dongle sends a signal to all waiting threads using `pthread_cond_broadcast` so that they can re-evaluate their priority and attempt the take the dongle again.
 
 ### Blocking cases handled
 This solution addresses the following concurrency issues:
@@ -39,7 +39,9 @@ A deadlock situation can arise if all of the 4 Coffman's conditions occur simult
 - Circular wait: each process must be waiting for a resource which is being held by another process, which in turn is waiting for the first process to release the resource.
 In this project, a deadlock can occur when each coder holds to dongle to their left.
 
-This project breaks the circular wait condition by implementing an asymmetric resource hierarchy.
+This project prevents deadlocks by breaking the resource holding condition. A coder will queue for both dongles and only acquire both of them when they are at the front of both queues. This prevents a coder from taking a dongle while waiting for another, which prevents other coders from using this dongle in the meantime.
+
+This project also breaks the circular wait condition by implementing an asymmetric resource hierarchy.
 Even-numbered coders always request their left dongle first, while odd-numbered coders always request their right dongle first. This ensures that the dongles are always locked in the order of odd-indexed dongle -> even-indexed dongle.
 
 #### Starvation prevention
@@ -120,4 +122,4 @@ Example output:
 - [Codexion visualizer](https://codexionvisualizer.dev/)
 - [Helgrind: a thread error detector](https://valgrind.org/docs/manual/hg-manual.html)
 
-AI is used to help refactor the code.
+AI is used to help debug and refactor the code.

@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:54:56 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/23 17:22:09 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/22 14:57:58 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,19 +95,15 @@ t_program	*init_program(t_args *args);
 void	*coder_routine(void *arg);
 void	print_status(t_coder *coder, char *event);
 int		compile(t_coder *coder);
-int		wait_for_both_fronts(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2);
 int		check_stop(t_coder *coder);
 
 /* Monitor routine */
 void	*monitor_routine(void *arg);
 
-/* Heap/queue */
-void	push(t_queue *queue, t_queue_node node);
-void	pop(t_queue *queue);
-void	enqueue(t_coder *coder, t_dongle *dongle);
-void	enqueue_both(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2);
-void	dequeue(t_dongle *dongle);
-void	dequeue_both(t_dongle *dongle1, t_dongle *dongle2);
+/* Heap */
+void	enqueue(t_queue *queue, t_queue_node node);
+void	dequeue(t_queue *queue);
+void	dequeue_and_wake(t_dongle *dongle);
 
 /* Utilities */
 unsigned long	get_current_time(void);

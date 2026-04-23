@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:50:28 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/21 18:36:53 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/23 16:45:09 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,10 @@ int	main(int argc, char *argv[])
 	if (!args)
 		return (error_exit("Invalid input.", NULL, NULL));
 	if (args->num_compiles == 0)
+	{
+		cleanup(args, NULL);
 		return (0);
+	}
 	program = init_program(args);
 	if (!program)
 		return (error_exit("Fail to initialze program.", args, program));

@@ -1,0 +1,38 @@
+Guaranteed burnout:
+- 1 coder e.g. ./codexion 1 800 200 100 200 5 0 fifo
+- time_to_burnout < time_to_compile e.g. ./codexion 4 100 200 100 200 5 0 fifo
+- time_to_burnout < time_to_compile + time_to_debug + time_to_refactor e.g. ./codexion 4 300 200 100 200 5 0 fifo
+- For even number coders: time_to_burnout < (time_to_compile + time_to_cooldown) * 2 e.g. ./codexion 4 500 200 100 100 5 60 fifo
+- For odd number coders: time_to_burnout < (time_to_compile + time_to_cooldown) * 3 e.g. ./codexion 5 800 200 200 200 5 80 fifo
+
+Guaranteed success:
+- number_of_compiles_required is set to 0 (nothing happens) e.g. ./codexion 1 800 200 100 200 0 0 fifo
+- For even number coders: time_to_burnout > (time_to_compile + time_to_cooldown) * 2 e.g. ./codexion 4 610 200 100 100 5 100 fifo
+- For odd number coders: time_to_burnout > (time_to_compile + time_to_cooldown) * 3 e.g. ./codexion 5 1810 200 100 100 5 400 fifo
+
+Succeed on edf but not on fifo:
+
+Succeed on fifo but not edf:
+
+
+???
+Deadlock:
+./codexion 3 800 200 100 100 5 80 fifo
+./codexion 5 800 200 10 10 5 80 fifo
+./codexion 5 800 200 0 0 5 80 fifo
+
+Still burnout when time_to_burnout bigger than calculation:
+280 * 2 = 560
+Command: ./codexion 2 600 200 200 200 3 80 edf
+==166387==
+15 1 has taken a dongle
+20 1 has taken a dongle
+21 1 is compiling
+223 1 is debugging
+303 2 has taken a dongle
+303 2 has taken a dongle
+303 2 is compiling
+423 1 is refactoring
+504 2 is debugging
+622 1 burned out
+

@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/17 17:39:46 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/23 17:22:27 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/22 14:57:44 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static void	swap(t_queue *queue)
 /*
 Add a coder ticket/ddl to the queue for a dongle.
 */
-void	push(t_queue *queue, t_queue_node node)
+void	enqueue(t_queue *queue, t_queue_node node)
 {
 	queue->queue[queue->size] = node;
 	queue->size++;
@@ -40,8 +40,17 @@ void	push(t_queue *queue, t_queue_node node)
 Remove the first coder ticket/ddl from the queue for a dongle
 and move the second coder to the first slot.
 */
-void	pop(t_queue *queue)
+void	dequeue(t_queue *queue)
 {
 	queue->queue[0] = queue->queue[1];
 	queue->size--;
+}
+
+/*
+Dequeue the first coder and wake the other coders in the queue.
+*/
+void	dequeue_and_wake(t_dongle *dongle)
+{
+	dequeue(&dongle->queue);
+	pthread_cond_broadcast(&dongle->cond);
 }

@@ -6,12 +6,15 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 17:20:09 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/22 20:16:52 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/23 16:15:28 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
+/*
+How many ms has passed since Epoch.
+*/
 unsigned long	get_current_time(void)
 {
 	struct timeval	tv;
