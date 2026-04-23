@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 12:25:08 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/23 17:15:15 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/23 19:54:32 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,11 @@ static int	wait_for_cooldown(t_coder *coder, t_dongle *dongle1,
 			usleep(sleep_time * 1000);
 			pthread_mutex_lock(&dongle1->mutex);
 			pthread_mutex_lock(&dongle2->mutex);
+		}
+		if (check_stop(coder))
+		{
+			dequeue_both(dongle1, dongle2);
+			return (0);
 		}
 	}
 	return (1);

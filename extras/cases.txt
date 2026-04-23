@@ -16,23 +16,3 @@ Succeed on fifo but not edf:
 
 
 ???
-Deadlock:
-./codexion 3 800 200 100 100 5 80 fifo
-./codexion 5 800 200 10 10 5 80 fifo
-./codexion 5 800 200 0 0 5 80 fifo
-
-Still burnout when time_to_burnout bigger than calculation:
-280 * 2 = 560
-Command: ./codexion 2 600 200 200 200 3 80 edf
-==166387==
-15 1 has taken a dongle
-20 1 has taken a dongle
-21 1 is compiling
-223 1 is debugging
-303 2 has taken a dongle
-303 2 has taken a dongle
-303 2 is compiling
-423 1 is refactoring
-504 2 is debugging
-622 1 burned out
-
