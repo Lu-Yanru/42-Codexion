@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/17 17:39:46 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/23 17:22:27 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/24 16:16:22 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	push(t_queue *queue, t_queue_node node)
 	queue->queue[queue->size] = node;
 	queue->size++;
 	if (queue->size == 2
-			&& queue->queue[1].priority < queue->queue[0].priority)
+			&& (queue->queue[1].priority < queue->queue[0].priority))
 		swap(queue);
 }
 
@@ -44,4 +44,6 @@ void	pop(t_queue *queue)
 {
 	queue->queue[0] = queue->queue[1];
 	queue->size--;
+	queue->queue[queue->size].coder_id = 0;
+	queue->queue[queue->size].priority = 0;
 }

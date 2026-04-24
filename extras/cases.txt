@@ -11,8 +11,38 @@ Guaranteed success:
 - For odd number coders: time_to_burnout > (time_to_compile + time_to_cooldown) * 3 e.g. ./codexion 5 1810 200 100 100 5 400 fifo
 
 Succeed on edf but not on fifo:
+- ./codexion 4 800 200 200 200 5 10 fifo
+Sometimes burned out because of deadlock.
+e.g. coder 1 queued for dongle 1 and dongle 0 first, then coder 2 queued for dongle 1 and dongle2,
+then coder 3 queued for dongle 3 and dongle 2, then coder 4 queued for dongle 3 and dongle 0.
+In this case, coders can only compile one by one, resulting in burn out.
+Implemented tie-breaker in edf
 
 Succeed on fifo but not edf:
 
-
 ???
+x Stuck:
+./codexion 3 800 200 100 100 5 80 fifo
+x Wrong order: 1 cannot enqueue because dongle was held by coder 3, so coder 3 enqueued first
+./codexion 3 650 200 0 0 5 0 edf
+==22785==
+15 1 has taken a dongle
+21 1 has taken a dongle
+21 1 is compiling
+223 1 is debugging
+224 3 has taken a dongle
+225 3 has taken a dongle
+225 3 is compiling
+225 1 is refactoring
+426 3 is debugging
+426 2 has taken a dongle
+426 2 has taken a dongle
+426 2 is compiling
+426 3 is refactoring
+631 2 is debugging
+633 2 is refactoring
+632 3 has taken a dongle
+634 3 has taken a dongle
+634 3 is compiling
+673 1 burned out
+-> 1 cannot queue because 3 is holding the dongle mutex. Impelemented a separate queue lock so other coders can enqueue even when a dongle is in use.

@@ -6,11 +6,28 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 12:25:08 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/23 19:54:32 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/24 16:25:47 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
+
+/*
+Check if a coder is at the front of a queue protected by queue_lock.
+Return 1 if yes, 0 no.
+*/
+static int	check_front(t_coder *coder, t_dongle *dongle)
+{
+	int	res;
+
+	pthread_mutex_lock(&dongle->queue_lock);
+	if (dongle->queue.queue[0].coder_id == coder->id)
+		res = 1;
+	else
+		res = 0;
+	pthread_mutex_unlock(&dongle->queue_lock);
+	return (res);
+}
 
 /*
 Wait until the coder is at the front of the dongle queue.
@@ -20,7 +37,7 @@ Assumes mutex is held on entry and remains held on return.
 static int	wait_for_front(t_coder *coder, t_dongle *dongle)
 {
 	// printf("dongle1 queue front: %d\n", dongle->queue.queue[0].coder_id);
-	while (dongle->queue.queue[0].coder_id != coder->id)
+	while (!check_front(coder, dongle))
 	{
 		// printf("dongle1 queue front: %d\n", dongle->queue.queue[0].coder_id);
 		pthread_cond_wait(&dongle->cond, &dongle->mutex);
@@ -57,7 +74,7 @@ int	wait_for_both_fronts(t_coder *coder, t_dongle *dongle1,
 		}
 		pthread_mutex_lock(&dongle2->mutex);
 		// printf("dongle2 queue front: %d\n", dongle2->queue.queue[0].coder_id);
-		if (dongle2->queue.queue[0].coder_id == coder->id)
+		if (check_front(coder, dongle2))
 			break ;
 		// printf("dongle2 queue front: %d\n", dongle2->queue.queue[0].coder_id);
 		if (check_stop(coder))
@@ -83,27 +100,23 @@ static int	wait_for_cooldown(t_coder *coder, t_dongle *dongle1,
 {
 	unsigned long	now;
 	unsigned long	wake_time;
-	unsigned long	dongle1_ready_time;
-	unsigned long	dongle2_ready_time;
 	unsigned long	sleep_time;
 
 	while (1)
 	{
 		now = get_current_time();
 		// printf("now: %lu, dongle1 last_used: %lu, dongle2 last_used: %lu\n", now, dongle1->last_used, dongle2->last_used);
-		dongle1_ready_time = dongle1->last_used + coder->args->dongle_cooldown;
-		dongle2_ready_time = dongle2->last_used + coder->args->dongle_cooldown;
-		if (now >= dongle1_ready_time && now >= dongle2_ready_time)
+		if (now >= dongle1->ready_time && now >= dongle2->ready_time)
 			break ;
 		if (check_stop(coder))
 		{
 			dequeue_both(dongle1, dongle2);
 			return (0);
 		}
-		if (dongle2_ready_time > dongle1_ready_time)
-			wake_time = dongle2_ready_time;
+		if (dongle2->ready_time > dongle1->ready_time)
+			wake_time = dongle2->ready_time;
 		else
-			wake_time = dongle1_ready_time;
+			wake_time = dongle1->ready_time;
 		sleep_time = wake_time - now;
 		if (sleep_time > 0)
 		{
@@ -165,7 +178,7 @@ and unlock the dongle.
 */
 static void	unlock_dongle(t_dongle *dongle)
 {
-	dongle->last_used = get_current_time();
+	dongle->ready_time = get_current_time() + dongle->args->dongle_cooldown;
 	dequeue(dongle);
 	pthread_mutex_unlock(&dongle->mutex);
 }

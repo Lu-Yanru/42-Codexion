@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:54:56 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/23 17:22:09 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/24 16:23:08 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,10 @@ typedef struct s_queue
 typedef struct s_dongle
 {
 	pthread_mutex_t	mutex;
+	pthread_mutex_t	queue_lock;
 	pthread_cond_t	cond;
 	t_args			*args;
-	unsigned long	last_used;
+	unsigned long	ready_time;
 	t_queue			queue;
 	int				ticket;
 }	t_dongle;

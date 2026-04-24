@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 15:08:05 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/22 14:52:37 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/24 16:23:20 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,10 @@ static t_dongle	*init_dongles(t_args *args)
 	while (i < args->num_coders)
 	{
 		pthread_mutex_init(&(dongles[i].mutex), NULL);
+		pthread_mutex_init(&(dongles[i].queue_lock), NULL);
 		pthread_cond_init(&(dongles[i].cond), NULL);
 		dongles[i].args = args;
-		dongles[i].last_used = 0;
+		dongles[i].ready_time = 0;
 		dongles[i].queue.size = 0;
 		dongles[i].ticket = 0;
 		i++;

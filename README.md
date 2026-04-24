@@ -25,7 +25,7 @@ Whenever a coder thread prints a log message, it locks the `write_lock` and only
 
 Two more mutexes, `compiles_lock` and `burnout_lock`, are implemented. Whenever a coder compiled, it addes one to its own `already_compiled` counter while locking with `compiles_lock`. The monitoring thread reads the `already_compiled` counter while locking with `compiles_lock` to check whether all coders have compiled enough times. The monitoring thread also checks whether any coder has burned out using the `burnout_lock`. Upon starting to compile, a coder updates their `last_compile` time while locking the `burnout_lock`. The monitoring thread reads the `last_compile` time of each coder while locking the `burnout_lock`, and compare it with `time_to_burnout` to check if a coder has burned out. Once the monitoring thread detects a stop condition, whether it's all coders compiled enough times or one coder has burned out, it sets `flag_stop` to one while locking the `stop_lock`. All coders reads `flag_stop` with the `stop_lock` continuously and stop their routine as soon as they detect that `flag_stop` has been set to one. Using mutexes prevents the coder threads and monitoring thread from accessing the same variable at the same time, and one thread might accessed the value before it was modified by the other.
 
-A condition variable (`pthread_cond_t`) is implemented for each dongle to manage the priority queue. Each coder uses `pthread_cond_wait` while waiting on their turn to take the dongle. Releasing the dongle sends a signal to all waiting threads using `pthread_cond_broadcast` so that they can re-evaluate their priority and attempt the take the dongle again.
+A condition variable (`pthread_cond_t`) is implemented for each dongle to manage the priority queue. Each coder uses `pthread_cond_wait` while waiting on their turn to take the dongle. Releasing the dongle sends a signal to all waiting threads using `pthread_cond_broadcast` so that they can re-evaluate their priority and attempt to take the dongle again.
 
 ### Blocking cases handled
 This solution addresses the following concurrency issues:
@@ -53,7 +53,7 @@ The following scheduling policies are implemented for distributing the dongles:
 
 #### Cooldown handling
 Dongles have a cooldown time where they are unavailable after being released. This is implemented as follows:
-Before a coder attempts to take a dongle, in addition to checking the availablity of the dongle mutex, they also need to check that `current_time >= last_used + time_to_cooldown`. Otherwise they need to keep waiting.
+Before a coder attempts to take a dongle, in addition to checking the availablity of the dongle mutex, they also need to check that `current_time >= ready_time`. `ready_time` is `last_used_time + time_to_cooldown`. Otherwise they need to keep waiting.
 
 #### Precise burnout detection
 The monitoring thread runs continuously and checks whether a coder has burned out using the `burnout_lock` every milisecond. Once a burnout is detected, the monitoring thread sets `flag_stop` to one with `stop_lock`. All coder threads read `flag_stop` with `stop_lock` and stop their routine.
