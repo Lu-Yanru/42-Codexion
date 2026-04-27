@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 17:30:52 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/27 15:39:03 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/27 18:01:36 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,6 @@ Stop all threads by setting flag_stop to 1.
 */
 static void	stop_all_threads(t_program *program)
 {
-
 	pthread_mutex_lock(&program->stop_lock);
 	program->flag_stop = 1;
 	pthread_mutex_unlock(&program->stop_lock);

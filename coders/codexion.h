@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:54:56 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/26 18:47:21 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/27 18:11:59 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,8 @@ t_program	*init_program(t_args *args);
 void	*coder_routine(void *arg);
 void	print_status(t_coder *coder, char *event);
 int		compile(t_coder *coder);
-int		wait_for_both_fronts(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2);
+int		wait_for_fronts(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2);
+int		wait_for_cooldown(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2);
 int		check_stop(t_coder *coder);
 
 /* Monitor routine */
@@ -110,6 +111,7 @@ void	enqueue(t_coder *coder, t_dongle *dongle);
 void	enqueue_both(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2);
 void	dequeue(t_dongle *dongle);
 void	dequeue_both(t_dongle *dongle1, t_dongle *dongle2);
+void	dequeue_and_unlock(t_dongle *dongle1, t_dongle *dongle2);
 
 /* Utilities */
 unsigned long	get_current_time(void);

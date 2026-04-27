@@ -25,7 +25,7 @@ Whenever a coder thread prints a log message, it locks the `write_lock` and only
 
 Two more mutexes, `compiles_lock` and `burnout_lock`, are implemented. Whenever a coder compiled, it addes one to its own `already_compiled` counter while locking with `compiles_lock`. The monitoring thread reads the `already_compiled` counter while locking with `compiles_lock` to check whether all coders have compiled enough times. The monitoring thread also checks whether any coder has burned out using the `burnout_lock`. Upon starting to compile, a coder updates their `last_compile` time while locking the `burnout_lock`. The monitoring thread reads the `last_compile` time of each coder while locking the `burnout_lock`, and compare it with `time_to_burnout` to check if a coder has burned out. Once the monitoring thread detects a stop condition, whether it's all coders compiled enough times or one coder has burned out, it sets `flag_stop` to one while locking the `stop_lock`. All coders reads `flag_stop` with the `stop_lock` continuously and stop their routine as soon as they detect that `flag_stop` has been set to one. Using mutexes prevents the coder threads and monitoring thread from accessing the same variable at the same time, and one thread might accessed the value before it was modified by the other.
 
-A condition variable (`pthread_cond_t`) is implemented for each dongle to manage the priority queue. Each coder uses `pthread_cond_wait` while waiting on their turn to take the dongle. Releasing the dongle sends a signal to all waiting threads using `pthread_cond_broadcast` so that they can re-evaluate their priority and attempt to take the dongle again.
+A separate `queue_lock` and a condition variable (`pthread_cond_t`) are implemented for each dongle to manage the priority queue. Each coder uses `pthread_cond_wait` while queueing to be at the front for both dongles. The monioring thread sends a single to all queueing threads every milisecond using `pthread_cond_broadcast` so that they can re-evaluate their priority and attempt to take the dongle again. This signal is also broadcasted whenever a coder enqueues and dequeues.
 
 ### Blocking cases handled
 This solution addresses the following concurrency issues:
@@ -50,6 +50,8 @@ The following scheduling policies are implemented for distributing the dongles:
 
 - **FIFO (First In, First Out)**: The dongle is granted to the coder whose request arrived first.
 - [**EDF (Earliest Deadline First)**](https://en.wikipedia.org/wiki/Earliest_deadline_first_scheduling): The dongle is granted to the coder whose deadline is the closest. Deadline = `last_compile_start`+ `time_to_burnout`.
+
+A tie-breaker is implemented for EDF when coders have the same deadline and are in a deadlock. For example, at the beginning of the simulation, all coders have the same deadline and immediately enqueue for all dongles when their threads have been created. It can happen that coder 2 enqueued at 2nd place for dongle 1 and 1st place for dongle 2, while coder 3 enqueued for 2nd place for dongle 2 and 1st place for dongle 3. In this case, neither can compile under FIFO. But under EDF, since their deadlines are the same, I force one of them to yield, i.e. dequeue and re-enqueue, so that it is guaranteed that at least one of them can compile.
 
 #### Cooldown handling
 Dongles have a cooldown time where they are unavailable after being released. This is implemented as follows:
