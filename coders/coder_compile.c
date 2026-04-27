@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 12:25:08 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/27 18:07:36 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/27 18:54:55 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static int	lock_both_dongles(t_coder *coder, t_dongle *dongle1,
 		if (!wait_for_cooldown(coder, dongle1, dongle2))
 			return (0);
 		if (dongle1->queue.queue[0].coder_id == coder->id
-				&& dongle2->queue.queue[0].coder_id == coder->id)
+			&& dongle2->queue.queue[0].coder_id == coder->id)
 			break ;
 		pthread_mutex_unlock(&dongle2->mutex);
 		pthread_mutex_unlock(&dongle1->mutex);

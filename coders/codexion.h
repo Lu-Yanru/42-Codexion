@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:54:56 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/27 18:11:59 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/27 19:00:41 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ typedef struct s_queue_node
 typedef struct s_queue
 {
 	int				size;
-	t_queue_node 	queue[2];
+	t_queue_node	queue[2];
 }	t_queue;
 
 typedef struct s_dongle
@@ -88,34 +88,34 @@ typedef struct s_program
 }	t_program;
 
 /* Input validation */
-t_args	*parse_input(int argc, char *argv[]);
+t_args			*parse_input(int argc, char *argv[]);
 
 /* Initalization */
-t_program	*init_program(t_args *args);
+t_program		*init_program(t_args *args);
 
 /* Coder routine */
-void	*coder_routine(void *arg);
-void	print_status(t_coder *coder, char *event);
-int		compile(t_coder *coder);
-int		wait_for_fronts(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2);
-int		wait_for_cooldown(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2);
-int		check_stop(t_coder *coder);
+void			*coder_routine(void *arg);
+void			print_status(t_coder *coder, char *event);
+int				compile(t_coder *coder);
+int				wait_for_fronts(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2);
+int				wait_for_cooldown(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2);
+int				check_stop(t_coder *coder);
 
 /* Monitor routine */
-void	*monitor_routine(void *arg);
+void			*monitor_routine(void *arg);
 
 /* Heap/queue */
-void	push(t_queue *queue, t_queue_node node);
-void	pop(t_queue *queue);
-void	enqueue(t_coder *coder, t_dongle *dongle);
-void	enqueue_both(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2);
-void	dequeue(t_dongle *dongle);
-void	dequeue_both(t_dongle *dongle1, t_dongle *dongle2);
-void	dequeue_and_unlock(t_dongle *dongle1, t_dongle *dongle2);
+void			push(t_queue *queue, t_queue_node node);
+void			pop(t_queue *queue);
+void			enqueue(t_coder *coder, t_dongle *dongle);
+void			enqueue_both(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2);
+void			dequeue(t_dongle *dongle);
+void			dequeue_both(t_dongle *dongle1, t_dongle *dongle2);
+void			dequeue_and_unlock(t_dongle *dongle1, t_dongle *dongle2);
 
 /* Utilities */
 unsigned long	get_current_time(void);
 int				error_exit(char *msg, t_args *args, t_program *program);
 void			cleanup(t_args *args, t_program *program);
 
-# endif
+#endif

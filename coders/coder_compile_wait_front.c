@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 17:54:49 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/27 18:35:15 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/27 18:52:26 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,8 @@ static int	should_yield(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2)
 	pthread_mutex_lock(&dongle1->queue_lock);
 	pthread_mutex_lock(&dongle2->queue_lock);
 	if (dongle2->queue.size < 2
-			|| dongle2->queue.queue[0].coder_id != coder->id
-			|| dongle1->queue.queue[0].coder_id == coder->id)
+		|| dongle2->queue.queue[0].coder_id != coder->id
+		|| dongle1->queue.queue[0].coder_id == coder->id)
 	{
 		pthread_mutex_unlock(&dongle2->queue_lock);
 		pthread_mutex_unlock(&dongle1->queue_lock);
@@ -78,7 +78,7 @@ Return 1 after re-checking that the coder is
 at the front of both dongles.
 Return 0 if not and unlocks both dongle mutexes again.
 */
-static int try_acquire_dongles(t_coder *coder, t_dongle *dongle1,
+static int	try_acquire_dongles(t_coder *coder, t_dongle *dongle1,
 	t_dongle *dongle2)
 {
 	pthread_mutex_lock(&dongle1->mutex);

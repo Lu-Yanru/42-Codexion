@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 18:32:30 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/27 18:47:45 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/27 18:55:16 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,4 +74,3 @@ int	wait_for_cooldown(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2)
 	}
 	return (1);
 }
-

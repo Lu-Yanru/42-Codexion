@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 17:30:52 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/27 18:01:36 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/27 18:54:10 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,11 @@ and return 1, else return 0.
 static int	check_burnout(t_program *program)
 {
 	int	i;
+	unsigned long	current_time;
 
 	i = 0;
 	while (i < program->args->num_coders)
 	{
-		unsigned long	current_time;
-
 		current_time = get_current_time();
 		pthread_mutex_lock((program->coders)[i].burnout_lock);
 		if (current_time - (program->coders)[i].last_compile
@@ -55,7 +54,8 @@ static int	check_compiles(t_program *program)
 	while (i < program->args->num_coders)
 	{
 		pthread_mutex_lock((program->coders)[i].compiles_lock);
-		if ((program->coders)[i].already_compiled >= program->args->num_compiles)
+		if ((program->coders)[i].already_compiled
+			>= program->args->num_compiles)
 			count++;
 		pthread_mutex_unlock((program->coders)[i].compiles_lock);
 		i++;

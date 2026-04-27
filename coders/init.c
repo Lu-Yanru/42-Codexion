@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 15:08:05 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/27 12:47:47 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/27 18:54:40 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ t_program	*init_program(t_args *args)
 	if (!program)
 		return (NULL);
 	program->start_time = get_current_time();
-		program->args = args;
+	program->args = args;
 	program->flag_stop = 0;
 	pthread_mutex_init(&(program->write_lock), NULL);
 	pthread_mutex_init(&(program->stop_lock), NULL);
