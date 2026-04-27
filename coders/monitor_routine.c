@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 17:30:52 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/27 18:54:10 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/27 19:02:17 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ and return 1, else return 0.
 */
 static int	check_burnout(t_program *program)
 {
-	int	i;
+	int				i;
 	unsigned long	current_time;
 
 	i = 0;
