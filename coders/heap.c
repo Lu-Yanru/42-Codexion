@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/17 17:39:46 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/24 16:16:22 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/27 14:09:23 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ Add a coder ticket/ddl to the queue for a dongle.
 */
 void	push(t_queue *queue, t_queue_node node)
 {
+	if (queue->size >= 2)
+		return ;
 	queue->queue[queue->size] = node;
 	queue->size++;
 	if (queue->size == 2
@@ -42,6 +44,8 @@ and move the second coder to the first slot.
 */
 void	pop(t_queue *queue)
 {
+	if (queue->size <= 0)
+		return ;
 	queue->queue[0] = queue->queue[1];
 	queue->size--;
 	queue->queue[queue->size].coder_id = 0;

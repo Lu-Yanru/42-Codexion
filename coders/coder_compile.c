@@ -6,11 +6,53 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 12:25:08 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/24 16:25:47 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/27 16:51:08 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
+
+/*
+Check if a coder should yield and requeue:
+When a coder is:
+- at the front of dongle2 but not at the front of dongle1
+- the coder behind in dongle2's queue has the same priority
+-> prevents deadlock when same priority
+Lock and unlock queue_lock of both dongles.
+Return 1 if yes, 0 no.
+*/
+static int	should_yield(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2)
+{
+	int	res;
+
+	pthread_mutex_lock(&dongle1->queue_lock);
+	pthread_mutex_lock(&dongle2->queue_lock);
+	if (dongle2->queue.size < 2)
+	{
+		pthread_mutex_unlock(&dongle2->queue_lock);
+		pthread_mutex_unlock(&dongle1->queue_lock);
+		return (0);
+	}
+	if (dongle2->queue.queue[0].coder_id != coder->id)
+	{
+		pthread_mutex_unlock(&dongle2->queue_lock);
+		pthread_mutex_unlock(&dongle1->queue_lock);
+		return (0);
+	}
+	if (dongle1->queue.queue[0].coder_id == coder->id)
+	{
+		pthread_mutex_unlock(&dongle2->queue_lock);
+		pthread_mutex_unlock(&dongle1->queue_lock);
+		return (0);
+	}
+	if (dongle2->queue.queue[0].priority == dongle2->queue.queue[1].priority)
+		res = 1;
+	else
+		res = 0;
+	pthread_mutex_unlock(&dongle2->queue_lock);
+	pthread_mutex_unlock(&dongle1->queue_lock);
+	return (res);
+}
 
 /*
 Check if a coder is at the front of a queue protected by queue_lock.
@@ -30,63 +72,54 @@ static int	check_front(t_coder *coder, t_dongle *dongle)
 }
 
 /*
-Wait until the coder is at the front of the dongle queue.
-Returns 0 if the stop flag is set, 1 otherwise.
-Assumes mutex is held on entry and remains held on return.
-*/
-static int	wait_for_front(t_coder *coder, t_dongle *dongle)
-{
-	// printf("dongle1 queue front: %d\n", dongle->queue.queue[0].coder_id);
-	while (!check_front(coder, dongle))
-	{
-		// printf("dongle1 queue front: %d\n", dongle->queue.queue[0].coder_id);
-		pthread_cond_wait(&dongle->cond, &dongle->mutex);
-		if (check_stop(coder))
-		{
-			dequeue(dongle);
-			return (0);
-		}
-	}
-	return (1);
-}
-
-/*
 Wait until coder is at the front of both dongles.
 Wait until coder is at the front of the queue of dongle1.
 Check if the coder is also at the front of dongle2 queue.
-If so, proceed (return 1), otherwise keep waiting.
+If so, proceed (return 1).
+Otherwise, check if the coder at the front of dongle2
+is also waiting for their dongle1,
+if so, yield (dequeue and reenqueue).
+To prevent both coders yield to each other infinitvely,
+keep a yield counter and each time sleep a bit longer before re-yielding.
+Otherwise keep waiting.
 Return 0 if the monitor signals stop while waiting.
-Both mutexes held on return if successful.
+Both dongle mutexes held on return if successful,
+otherwise unlock both dongle mutexes.
 */
 int	wait_for_both_fronts(t_coder *coder, t_dongle *dongle1,
 	t_dongle *dongle2)
 {
+	// struct timespec	ts;
+	// unsigned long	wait_time;
+
 	while (1)
 	{
-		pthread_mutex_lock(&dongle1->mutex);
-		if (!wait_for_front(coder, dongle1))
-		{
-			pthread_mutex_unlock(&dongle1->mutex);
-			pthread_mutex_lock(&dongle2->mutex);
-			dequeue(dongle2);
-			pthread_mutex_unlock(&dongle2->mutex);
-			return (0);
-		}
-		pthread_mutex_lock(&dongle2->mutex);
-		// printf("dongle2 queue front: %d\n", dongle2->queue.queue[0].coder_id);
-		if (check_front(coder, dongle2))
-			break ;
-		// printf("dongle2 queue front: %d\n", dongle2->queue.queue[0].coder_id);
 		if (check_stop(coder))
 		{
 			dequeue_both(dongle1, dongle2);
 			return (0);
 		}
-		pthread_mutex_unlock(&dongle2->mutex);
-		pthread_mutex_unlock(&dongle1->mutex);
-		usleep(100);
+		if (should_yield(coder, dongle1, dongle2))
+		{
+			dequeue(dongle2);
+			usleep(coder->yield_count * 100);
+			coder->yield_count++;
+			enqueue(coder, dongle2);
+			continue ;
+		}
+		if (check_front(coder, dongle1) && check_front(coder, dongle2))
+		{
+			pthread_mutex_lock(&dongle1->mutex);
+			pthread_mutex_lock(&dongle2->mutex);
+			if (check_front(coder, dongle1) && check_front(coder, dongle2))
+				return (1);
+			pthread_mutex_unlock(&dongle2->mutex);
+			pthread_mutex_unlock(&dongle1->mutex);
+		}
+		pthread_mutex_lock(&dongle1->queue_lock);
+		pthread_cond_wait(&dongle1->cond, &dongle1->queue_lock);
+		pthread_mutex_unlock(&dongle1->queue_lock);
 	}
-	return (1);
 }
 
 /*
@@ -105,12 +138,13 @@ static int	wait_for_cooldown(t_coder *coder, t_dongle *dongle1,
 	while (1)
 	{
 		now = get_current_time();
-		// printf("now: %lu, dongle1 last_used: %lu, dongle2 last_used: %lu\n", now, dongle1->last_used, dongle2->last_used);
 		if (now >= dongle1->ready_time && now >= dongle2->ready_time)
 			break ;
 		if (check_stop(coder))
 		{
 			dequeue_both(dongle1, dongle2);
+			pthread_mutex_unlock(&dongle2->mutex);
+			pthread_mutex_unlock(&dongle1->mutex);
 			return (0);
 		}
 		if (dongle2->ready_time > dongle1->ready_time)
@@ -129,6 +163,8 @@ static int	wait_for_cooldown(t_coder *coder, t_dongle *dongle1,
 		if (check_stop(coder))
 		{
 			dequeue_both(dongle1, dongle2);
+			pthread_mutex_unlock(&dongle2->mutex);
+			pthread_mutex_unlock(&dongle1->mutex);
 			return (0);
 		}
 	}
@@ -165,6 +201,8 @@ static int	lock_both_dongles(t_coder *coder, t_dongle *dongle1,
 	if (check_stop(coder))
 	{
 		dequeue_both(dongle1, dongle2);
+		pthread_mutex_unlock(&dongle2->mutex);
+		pthread_mutex_unlock(&dongle1->mutex);
 		return (0);
 	}
 	print_status(coder, "has taken a dongle");
@@ -173,13 +211,16 @@ static int	lock_both_dongles(t_coder *coder, t_dongle *dongle1,
 }
 
 /*
-Record the time when the dongle was used
+Record the time when the dongle was used,
+reset yield_count, dequeue the coder
 and unlock the dongle.
 */
-static void	unlock_dongle(t_dongle *dongle)
+static void	unlock_dongle(t_coder *coder, t_dongle *dongle)
 {
 	dongle->ready_time = get_current_time() + dongle->args->dongle_cooldown;
+	coder->yield_count = 0;
 	dequeue(dongle);
+	// pthread_cond_broadcast(&dongle->cond);
 	pthread_mutex_unlock(&dongle->mutex);
 }
 
@@ -193,12 +234,12 @@ int	compile(t_coder *coder)
 		return (lock_both_dongles(coder, coder->rdongle, NULL));
 	if (coder->id % 2 == 0)
 	{
-		if (lock_both_dongles(coder, coder->ldongle, coder->rdongle) == 0)
+		if (!lock_both_dongles(coder, coder->ldongle, coder->rdongle))
 			return (0);
 	}
 	else
 	{
-		if (lock_both_dongles(coder, coder->rdongle, coder->ldongle) == 0)
+		if (!lock_both_dongles(coder, coder->rdongle, coder->ldongle))
 			return (0);
 	}
 	pthread_mutex_lock(coder->burnout_lock);
@@ -209,7 +250,7 @@ int	compile(t_coder *coder)
 	pthread_mutex_lock(coder->compiles_lock);
 	coder->already_compiled++;
 	pthread_mutex_unlock(coder->compiles_lock);
-	unlock_dongle(coder->ldongle);
-	unlock_dongle(coder->rdongle);
+	unlock_dongle(coder, coder->ldongle);
+	unlock_dongle(coder, coder->rdongle);
 	return (1);
 }

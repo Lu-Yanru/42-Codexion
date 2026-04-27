@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 15:08:05 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/24 16:23:20 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/27 12:47:47 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,14 @@ static t_dongle	*init_dongles(t_args *args)
 		dongles[i].ticket = 0;
 		i++;
 	}
-	return dongles;
+	return (dongles);
 }
 
 static void	connect_coder_program(t_coder *coder, t_program *program)
 {
 	coder->flag_stop = &(program->flag_stop);
 	coder->already_compiled = 0;
+	coder->yield_count = 0;
 	coder->start_time = program->start_time;
 	coder->last_compile = program->start_time;
 	coder->write_lock = &(program->write_lock);
@@ -74,7 +75,7 @@ static t_coder	*init_coders(t_args	*args, t_program *program)
 		connect_coder_program(&coders[i], program);
 		i++;
 	}
-	return coders;
+	return (coders);
 }
 
 /*

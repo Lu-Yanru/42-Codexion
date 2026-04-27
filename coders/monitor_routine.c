@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 17:30:52 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/23 19:59:36 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/27 15:39:03 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,13 +66,34 @@ static int	check_compiles(t_program *program)
 }
 
 /*
+Broadcast to all waiting coders to recheck their queue conditions
+to see if they are at the front of both dongles
+or if they nned to yield (wait_for_both_front()).
+*/
+static void	recheck_queue(t_program *program)
+{
+	int	i;
+
+	i = 0;
+	while (i < program->args->num_coders)
+	{
+		pthread_mutex_lock(&program->dongles[i].queue_lock);
+		pthread_cond_broadcast(&program->dongles[i].cond);
+		pthread_mutex_unlock(&program->dongles[i].queue_lock);
+		i++;
+	}
+}
+
+/*
 Stop all threads by setting flag_stop to 1.
 */
 static void	stop_all_threads(t_program *program)
 {
+
 	pthread_mutex_lock(&program->stop_lock);
 	program->flag_stop = 1;
 	pthread_mutex_unlock(&program->stop_lock);
+	recheck_queue(program);
 }
 
 /*
@@ -93,6 +114,7 @@ void	*monitor_routine(void *arg)
 			break ;
 		if (check_compiles(program))
 			break ;
+		recheck_queue(program);
 		usleep(1000);
 	}
 	stop_all_threads(program);

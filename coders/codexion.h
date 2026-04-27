@@ -6,7 +6,7 @@
 /*   By: yanlu <yanlu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:54:56 by yanlu             #+#    #+#             */
-/*   Updated: 2026/04/24 16:23:08 by yanlu            ###   ########.fr       */
+/*   Updated: 2026/04/26 18:47:21 by yanlu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ typedef struct s_coder
 	t_dongle		*rdongle;
 	int				*flag_stop;
 	int				already_compiled;
+	int				yield_count;
 	unsigned long	start_time;
 	unsigned long	last_compile;
 	pthread_mutex_t	*write_lock;
